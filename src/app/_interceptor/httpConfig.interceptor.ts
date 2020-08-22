@@ -56,7 +56,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
 
     }
 
-    async presentLoad() {
+    async presentLoad() { 
         this.loader = await this.loadCtrl.create({
             message: 'Processing..'
         }).then((res) => {
