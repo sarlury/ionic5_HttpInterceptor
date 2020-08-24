@@ -2,25 +2,29 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, Htt
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
 
 
     loader: any;
+    toast: any;
 
     constructor(
-        public loadCtrl: LoadingController
+        public loadCtrl: LoadingController,
+        public toastCtrl: ToastController
     ) {}
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
 
-        const token = "my-token-string-from-server";
+        const token = "your generated token";
 
         if(token) {
             request = request.clone({
                 setHeaders: {
-                    'Authorization': token
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'X-Api-Key': "your Api Key",
+                    'X-Token': token
                 }
             });
         }
@@ -28,13 +32,13 @@ export class HttpConfigInterceptor implements HttpInterceptor {
         if(!request.headers.has('Content-Type')) {
             request = request.clone({
                 setHeaders: {
-                    'content-type': 'application/json'
+                    'content-type': 'application/x-www-form-urlencoded',
                 }
             });
         }
 
         request = request.clone({
-            headers: request.headers.set('Accept', 'application/json')
+            headers: request.headers.set('Accept', 'application/x-www-form-urlencoded')
         });
         // add loader here
         this.presentLoad();
@@ -42,6 +46,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
             map((event: HttpEvent<any>) => {
                 if(event instanceof HttpResponse) {
                     console.log('event--->', event);
+                    this.presentToast();
                 }
                 // loader will dismissed if complete
                 this.hideLoader();
@@ -56,7 +61,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
 
     }
 
-    async presentLoad() { 
+    async presentLoad() {
         this.loader = await this.loadCtrl.create({
             message: 'Processing..'
         }).then((res) => {
@@ -69,7 +74,16 @@ export class HttpConfigInterceptor implements HttpInterceptor {
         this.hideLoader();
     }
 
-    hideLoader() {
-        this.loadCtrl.dismiss();
+    async hideLoader() {
+       await this.loadCtrl.dismiss(null, undefined);
+    }
+
+    async presentToast() {
+        this.toast = await this.toastCtrl.create({
+            message: "Success",
+            duration: 2000
+        }).then((res) => {
+            res.present();
+        });
     }
 }

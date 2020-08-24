@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpService } from '../http.service';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,17 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
+  title: any;
+  total: any;
+
+  constructor(
+    private http: HttpService
+  ) {}
+
+  employeeDetails() {
+    this.http.getDetails().subscribe(res => {
+      console.log(res);
+    });
+  }
 
 }

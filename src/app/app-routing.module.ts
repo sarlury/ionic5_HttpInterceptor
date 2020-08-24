@@ -11,6 +11,18 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'notfound',
+    loadChildren: () => import('./responPage/notfound/notfound.module').then( m => m.NotfoundPageModule)
+  },
+  {
+    path: 'menu',
+    loadChildren: () => import('./menu/menu.module').then( m => m.MenuPageModule)
+  },
+  {
+    path: 'paket',
+    loadChildren: () => import('./paket/paket.module').then( m => m.PaketPageModule)
+  },
 ];
 
 @NgModule({
